@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   OFFICIAL SILAH BRAND IDENTITY FONTS
+   الخط الأساسي المعتمد: Expo Arabic
+   خط الشعار فقط: Hacen Tunisia
+   ========================================================================== */
+
+/* Expo Arabic - Light (300) */
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Expo Arabic - Book / Regular (400) */
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-Book.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Expo Arabic - Medium / SemiBold (500 & 600) */
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-SemiBold.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Expo Arabic - Bold (700 & 800) */
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-Bold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Expo Arabic';
+  src: url('/fonts/ExpoArabic-Bold.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hacen Tunisia - خط الشعار فقط */
+@font-face {
+  font-family: 'Hacen Tunisia';
+  src: url('/fonts/HacenTunisia.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --silah-red: #d1232a;
+  --silah-dark: #231f20;
+  --silah-green: #208c6b;
+  --silah-blue: #24419f;
+  --silah-gray: #828282;
+  --silah-light: #f2f2f2;
+  --font-family-sans: 'Expo Arabic', 'Tajawal', sans-serif;
+}
+
+/* Global Font Enforcement */
+html,
+body,
+button,
+input,
+select,
+textarea,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+table {
+  font-family: 'Expo Arabic', 'Tajawal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}
+
+.font-logo {
+  font-family: 'Hacen Tunisia', 'Expo Arabic', sans-serif !important;
+}

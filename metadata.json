@@ -1,0 +1,6 @@
+{
+  "name": "صلة | نظام تقرير التسويق الذكي (Google Sheets Hub & Executive Dashboard)",
+  "description": "لوحة تحكم تنفيذية ومعمارية متكاملة لـ Google Sheets لتتبع أنشطة التسويق الرقمي الشهرية لشركة صلة بهويتها المعتمدة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
