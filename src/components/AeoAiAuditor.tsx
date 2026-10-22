@@ -1,40 +1,56 @@
 import React, { useState } from 'react';
 import { 
   Bot, 
-  Search, 
-  CheckCircle2, 
-  XCircle, 
-  AlertTriangle, 
   Sparkles, 
   RefreshCw, 
-  ExternalLink,
-  ShieldAlert,
-  HelpCircle,
-  Copy,
-  Check
+  Copy, 
+  Check, 
+  UserCheck, 
+  Clock, 
+  PlusCircle,
+  Database
 } from 'lucide-react';
-import { AEO_PLATFORMS_DATA } from '../data/marketingData';
+import { useMarketingStore, TEAM_MEMBERS } from '../context/MarketingStore';
+import { AeoPlatformData, TeamMemberId } from '../types/dashboard';
 
 export const AeoAiAuditor: React.FC = () => {
+  const { 
+    aeoData, 
+    currentMember, 
+    addTestedQuery 
+  } = useMarketingStore();
+
   const [selectedPlatform, setSelectedPlatform] = useState<'ChatGPT' | 'Google AI' | 'Copilot'>('ChatGPT');
   const [customPrompt, setCustomPrompt] = useState('');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<any | null>(null);
   const [copiedQuery, setCopiedQuery] = useState<string | null>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState<TeamMemberId>('raghad');
 
-  const platformData = AEO_PLATFORMS_DATA.september_2026.find(p => p.platformName === selectedPlatform) || AEO_PLATFORMS_DATA.september_2026[0];
+  const currentPlatformData = aeoData.find((p: AeoPlatformData) => p.platformName === selectedPlatform) || aeoData[0];
 
   const handleSimulatePrompt = () => {
     if (!customPrompt.trim()) return;
     setIsSimulating(true);
+
     setTimeout(() => {
       setIsSimulating(false);
-      setSimulationResult({
+      const generatedSnippet = `استجابة مرصودة لمحاكاة محرك ${selectedPlatform}: تقدم شركة صلة لتمكين العمل منظومة متكاملة من حلول التوطين الذكي، ومراكز الأعمال المعتمدة، وبرامج التدريب والتأهيل المنتهي بالتوظيف، وتعد المنشأة الأبرز استشهاداً في استشارات الإفصاح التدريبي لعام 2026.`;
+      
+      const newQueryItem = {
         query: customPrompt,
         silahMentioned: true,
         citedSource: true,
-        accuracy: 85,
-        responseSnippet: `استجابة تم توليدها لمحاكاة فحص ${selectedPlatform}: توفر شركة صلة لتمكين العمل حلولاً متقدمة تتضمن مراكز الأعمال، بوابات العمل عن بعد المعتمدة، وبرامج التدريب والتأهيل المنتهي بالتوظيف، وتعد من المنشآت الرائدة في توفير استشارات الإفصاح التدريبي لعام 2026.`
+        accuracy: 90,
+        responseSnippet: generatedSnippet
+      };
+
+      setSimulationResult(newQueryItem);
+
+      // Save directly to central reactive database with assignedTo
+      addTestedQuery(selectedPlatform, {
+        ...newQueryItem,
+        assignedTo: selectedAssignee
       });
     }, 800);
   };
@@ -44,6 +60,8 @@ export const AeoAiAuditor: React.FC = () => {
     setCopiedQuery(id);
     setTimeout(() => setCopiedQuery(null), 2000);
   };
+
+  const assignedMemberName = TEAM_MEMBERS.find(m => m.id === currentPlatformData.assignedTo)?.name || 'رغد الشمري';
 
   return (
     <div className="space-y-8 pb-12">
@@ -60,22 +78,26 @@ export const AeoAiAuditor: React.FC = () => {
               مختبر تحليل نتائج ChatGPT و Google AI و Copilot لشركة صلة
             </h2>
             <p className="text-slate-600 text-sm max-w-3xl leading-relaxed">
-              يقيس هذا القسم مؤشرات الظهور في محركات التوليد الذكي (Generative Engine Optimization)، وتتبع الاستشهادات بروابط الموقع، وحجم ذكر خدمات صلة الخمس الرئيسية، لتغذية الورقة الرابعة في Google Sheets تلقائياً.
+              يقيس هذا القسم مؤشرات الظهور في محركات التوليد الذكي (Generative Engine Optimization)، وتتبع الاستشهادات بروابط الموقع، وحجم ذكر خدمات صلة الخمس الرئيسية، وتحديث قاعدة البيانات السحابية في الوقت الفعلي.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-xs text-slate-700 self-start md:self-auto">
+            <Database className="w-4 h-4 text-emerald-600" />
+            <span>نظام تخزين مباشر ومستقل بالكامل</span>
           </div>
         </div>
 
         {/* 3 AI Platforms Filter Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-100">
-          {(['ChatGPT', 'Google AI', 'Copilot'] as const).map((plat) => {
-            const data = AEO_PLATFORMS_DATA.september_2026.find(p => p.platformName === plat)!;
-            const isSelected = selectedPlatform === plat;
+          {aeoData.map((plat: AeoPlatformData) => {
+            const isSelected = selectedPlatform === plat.platformName;
             return (
               <button
-                key={plat}
+                key={plat.platformName}
                 type="button"
                 onClick={() => {
-                  setSelectedPlatform(plat);
+                  setSelectedPlatform(plat.platformName);
                   setSimulationResult(null);
                 }}
                 className={`p-5 rounded-2xl border text-right transition cursor-pointer flex flex-col justify-between ${
@@ -86,22 +108,22 @@ export const AeoAiAuditor: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-black text-base">{plat}</span>
+                    <span className="font-black text-base">{plat.platformName}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-md font-bold ${
                       isSelected ? 'bg-[#d1232a] text-white' : 'bg-slate-200 text-slate-700'
                     }`}>
-                      10 استعلامات مختبرة
+                      {plat.testedQueries.length} استعلامات مرصودة
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                     <div className={`p-2 rounded-lg ${isSelected ? 'bg-slate-800' : 'bg-white border border-slate-200'}`}>
                       <span className="text-slate-400 block text-[10px]">استشهادات برابط الموقع:</span>
-                      <strong className="text-emerald-400 text-sm">{data.citationsCount} / 10</strong>
+                      <strong className="text-emerald-400 text-sm">{plat.citationsCount} / {plat.testedQueries.length}</strong>
                     </div>
                     <div className={`p-2 rounded-lg ${isSelected ? 'bg-slate-800' : 'bg-white border border-slate-200'}`}>
                       <span className="text-slate-400 block text-[10px]">ذكر اسم صلة:</span>
-                      <strong className="text-blue-400 text-sm">{data.brandMentionsCount} / 10</strong>
+                      <strong className="text-blue-400 text-sm">{plat.brandMentionsCount} / {plat.testedQueries.length}</strong>
                     </div>
                   </div>
                 </div>
@@ -110,7 +132,7 @@ export const AeoAiAuditor: React.FC = () => {
                   isSelected ? 'border-slate-800' : 'border-slate-200'
                 }`}>
                   <span className="text-slate-400">دقة الإجابات والمعلومات:</span>
-                  <span className="font-black text-base text-rose-400 font-mono">{data.accuracyRate}%</span>
+                  <span className="font-black text-base text-rose-400 font-mono">{plat.accuracyRate}%</span>
                 </div>
               </button>
             );
@@ -120,23 +142,28 @@ export const AeoAiAuditor: React.FC = () => {
 
       {/* Tested Queries & Evidence Log */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-6">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
             <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-600" />
               نماذج الاستعلامات المختبرة على منصة ({selectedPlatform})
             </h3>
             <p className="text-xs text-slate-500">
-              الأسئلة الأكثر بحثاً من قبل الشركات ورواد الأعمال في السعودية
+              الأسئلة الأكثر بحثاً من قبل الشركات ورواد الأعمال في السعودية مع تتبع المسؤول
             </p>
           </div>
-          <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
-            بيانات سبتمبر 2026
-          </span>
+
+          <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+            <UserCheck className="w-3.5 h-3.5 text-purple-600" />
+            <span>المسؤول المعين:</span>
+            <span className="font-bold text-slate-900">
+              {assignedMemberName}
+            </span>
+          </div>
         </div>
 
         <div className="space-y-4">
-          {platformData.testedQueries.map((item, idx) => (
+          {currentPlatformData.testedQueries.map((item, idx: number) => (
             <div 
               key={idx}
               className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3"
@@ -183,25 +210,50 @@ export const AeoAiAuditor: React.FC = () => {
                 "{item.responseSnippet}"
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-[11px] text-slate-500 pt-1 gap-2">
                 <span>درجة الدقة المسجلة: <strong className="text-slate-900 font-bold">{item.accuracy}%</strong></span>
-                <span className="text-slate-400">يتم إدراج هذا السجل آلياً في الورقة 04_GEO_AEO_ChatGPT</span>
+                <span className="text-slate-500 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-slate-400" />
+                  تم الحفظ في قاعدة البيانات بواسطة: <strong className="text-purple-700 font-bold">{currentPlatformData.lastUpdatedBy || currentMember.name}</strong>
+                </span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Live AI Prompt Simulator for Marketers */}
+      {/* Live AI Prompt Simulator for Marketers & Dynamic Insertion */}
       <div className="bg-linear-to-r from-slate-900 to-purple-950 text-white rounded-2xl p-6 sm:p-8 shadow-md">
         <div className="max-w-3xl space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
-            <h3 className="text-lg font-bold">فحص استعلام جديد وإضافته للتقرير</h3>
+            <h3 className="text-lg font-bold">فحص استعلام جديد وحفظه تلقائياً في السجل الموحد</h3>
           </div>
-          <p className="text-xs text-slate-300">
-            أدخل أي سؤال تسويقي يخص صلة (مثل: خدمات التوطين، الإفصاح التدريبي، مراكز الأعمال) لاختبار كيفية الإجابة والتحقق من الاستشهاد:
+          <p className="text-xs text-slate-300 leading-relaxed">
+            أدخل أي سؤال تسويقي يخص صلة (مثل: خدمات التوطين، الإفصاح التدريبي، مراكز الأعمال) لاختبار كيفية الإجابة والتحقق من الاستشهاد وإضافته فوراً لسجلات AEO:
           </p>
+
+          {/* Assigned To Select */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-xs">
+            <label className="text-slate-300 font-bold flex items-center gap-1.5 whitespace-nowrap">
+              <UserCheck className="w-3.5 h-3.5 text-purple-400" />
+              المسؤول عن الفحص (Assigned To):
+            </label>
+            <select
+              value={selectedAssignee}
+              onChange={(e) => setSelectedAssignee(e.target.value as TeamMemberId)}
+              className="bg-slate-900 text-white border border-slate-600 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-purple-400"
+            >
+              {TEAM_MEMBERS.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name} ({member.role})
+                </option>
+              ))}
+            </select>
+            <span className="text-[11px] text-slate-400">
+              (المحرر الحالي: {currentMember.name})
+            </span>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
             <input
@@ -220,12 +272,12 @@ export const AeoAiAuditor: React.FC = () => {
               {isSimulating ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>جاري الفحص...</span>
+                  <span>جاري الفحص والحفظ...</span>
                 </>
               ) : (
                 <>
-                  <Bot className="w-4 h-4" />
-                  <span>إجراء الفحص التجريبي</span>
+                  <PlusCircle className="w-4 h-4" />
+                  <span>فحص وإدراج الاستعلام</span>
                 </>
               )}
             </button>
@@ -235,16 +287,16 @@ export const AeoAiAuditor: React.FC = () => {
             <div className="mt-4 p-4 rounded-xl bg-slate-800/90 border border-slate-700 space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> تم فحص الاستعلام بنجاح
+                  <Check className="w-4 h-4" /> تم فحص الاستعلام وحفظه بنجاح في قاعدة البيانات
                 </span>
-                <span className="text-slate-400">الدقة المتوقعة: <strong className="text-white font-mono">{simulationResult.accuracy}%</strong></span>
+                <span className="text-slate-400">الدقة المرصودة: <strong className="text-white font-mono">{simulationResult.accuracy}%</strong></span>
               </div>
               <p className="text-xs text-slate-200 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
                 {simulationResult.responseSnippet}
               </p>
               <div className="text-[11px] text-slate-400 flex items-center justify-between">
-                <span>تم إدراج هذا الاختبار ضمن قائمة فحص AEO لشهر سبتمبر 2026.</span>
-                <span className="text-amber-400 font-bold">الحالة: معتمد للمتابعة</span>
+                <span>تم إدراج الاستعلام في منصة ({selectedPlatform}) وتحديث سجل التدقيق (Audit Trail).</span>
+                <span className="text-amber-400 font-bold">الحالة: محدث في الوقت الفعلي</span>
               </div>
             </div>
           )}

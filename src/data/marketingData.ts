@@ -738,6 +738,8 @@ export const LEAD_GEN_SUMMARY: LeadGenData[] = [
   }
 ];
 
+export const LEAD_GENERATION_DATABASE = LEAD_GEN_SUMMARY;
+
 // ==========================================
 // THE 9 GOOGLE SHEETS ARCHITECTURE TABS SPEC
 // ==========================================
